@@ -11,8 +11,8 @@
     <!-- External CSS File -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- Form, Modal & Full Screen Viewer Styles -->
     <style>
+        /* Form & Modal Styles */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -95,6 +95,26 @@
             transition: transform 0.2s;
         }
         .btn-delete:hover { transform: scale(1.15); }
+
+        /* Secret Admin Lock Icon */
+        .admin-lock-btn {
+            background: transparent;
+            border: none;
+            color: #8b949e;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        .admin-lock-btn:hover { color: #58a6ff; }
+        .admin-active { color: #238636 !important; }
+
+        /* Fallback background when images load */
+        .card-preview {
+            background: #161b22;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
@@ -122,10 +142,16 @@
             <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <span class="section-tag">VERIFIED CREDENTIALS & CERTIFICATES</span>
                 
-                <!-- Direct Add Button -->
-                <button onclick="openModal()" class="btn-pill-light" style="cursor: pointer; background: #238636; color: white; border: none;">
-                    <i class="fa-solid fa-plus"></i> ADD CERTIFICATE
-                </button>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <!-- Admin Add Button (Visible only when unlocked) -->
+                    <button id="addCertBtn" onclick="openModal()" class="btn-pill-light" style="display: none; cursor: pointer; background: #238636; color: white; border: none;">
+                        <i class="fa-solid fa-plus"></i> ADD CERTIFICATE
+                    </button>
+                    <!-- Admin Unlock Icon -->
+                    <button onclick="handleAdminToggle()" id="adminLockIcon" class="admin-lock-btn" title="Admin Login">
+                        <i class="fa-solid fa-lock"></i>
+                    </button>
+                </div>
             </div>
 
             <!-- Certificates Grid -->
@@ -158,7 +184,7 @@
             <div class="form-group">
                 <label>Upload Image OR Image Link</label>
                 <input type="file" id="certFile" accept="image/*" style="margin-bottom: 6px;">
-                <input type="text" id="certImage" placeholder="OR enter image name/URL (e.g. cert3.jpg)">
+                <input type="text" id="certImage" placeholder="OR enter image file name (e.g. cert1.jpg)">
             </div>
             <div class="form-group">
                 <label>Verification Link / External Link (Optional)</label>
@@ -177,22 +203,31 @@
         <img id="fullScreenImage" class="viewer-img" src="" alt="Full Certificate View">
     </div>
 
-    <!-- JavaScript Auto Handler -->
+    <!-- JavaScript Handler -->
     <script>
+        // Password for Admin controls (Add & Delete)
+        const ADMIN_PASSWORD = "admin123"; 
+        let isAdminLoggedIn = false;
+
+        // Default certificates shown on GitHub Pages live website
+        // Make sure image files (cert1.jpg, cert2.jpg) are uploaded to your GitHub repo root folder
         const initialCertificates = [
             {
                 title: "Bug Bounty Certificate",
                 issuer: "ISSUED BY • PLATFORM NAME",
-                image: "cert1.jpg",
+                image: "bugbountycert.jpeg",
                 link: "cert1.jpg"
             },
             {
                 title: "Cybersecurity Internship",
                 issuer: "ISSUED BY • COMPANY NAME",
-                image: "cert2.jpg",
+                image: "interncert.png",
                 link: "cert2.jpg"
             }
         ];
+
+        // Fallback placeholder image when local image file is missing on server
+        const FALLBACK_IMAGE = "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22250%22%20viewBox%3D%220%200%20400%20250%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23161b22%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20fill%3D%22%2358a6ff%22%20font-family%3D%22sans-serif%22%20font-size%3D%2218%22%3ECertificate%20Preview%3C%2Ftext%3E%3C%2Fsvg%3E";
 
         function getCertificates() {
             const saved = localStorage.getItem('navi_certificates');
@@ -205,8 +240,8 @@
             
             grid.innerHTML = certs.map((cert, index) => `
                 <div class="project-card">
-                    <div class="card-preview" style="padding: 0; overflow: hidden; background: #000; cursor: pointer;" onclick="openViewer('${cert.image}')">
-                        <img src="${cert.image}" alt="${cert.title}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://via.placeholder.com/400x250/0f1422/00e5ff?text=Certificate'">
+                    <div class="card-preview" style="padding: 0; overflow: hidden; height: 220px; cursor: pointer;" onclick="openViewer('${cert.image}')">
+                        <img src="${cert.image}" alt="${cert.title}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='${FALLBACK_IMAGE}';">
                     </div>
                     <div class="card-info">
                         <div>
@@ -217,17 +252,59 @@
                             <button onclick="openViewer('${cert.image}')" class="icon-btn" title="View Full Screen">
                                 <i class="fa-solid fa-expand"></i>
                             </button>
+                            ${isAdminLoggedIn ? `
                             <button onclick="deleteCertificate(${index})" class="btn-delete" title="Delete Certificate">
                                 <i class="fa-solid fa-trash"></i>
-                            </button>
+                            </button>` : ''}
                         </div>
                     </div>
                 </div>
             `).join('');
+
+            // Toggle Admin UI
+            const addBtn = document.getElementById('addCertBtn');
+            const lockIcon = document.getElementById('adminLockIcon');
+            if (isAdminLoggedIn) {
+                addBtn.style.display = 'inline-flex';
+                lockIcon.classList.add('admin-active');
+                lockIcon.innerHTML = '<i class="fa-solid fa-unlock"></i>';
+                lockIcon.title = "Lock Admin Mode";
+            } else {
+                addBtn.style.display = 'none';
+                lockIcon.classList.remove('admin-active');
+                lockIcon.innerHTML = '<i class="fa-solid fa-lock"></i>';
+                lockIcon.title = "Admin Login";
+            }
+        }
+
+        /* Admin Authentication Logic */
+        function handleAdminToggle() {
+            if (isAdminLoggedIn) {
+                isAdminLoggedIn = false;
+                sessionStorage.removeItem('navi_admin_auth');
+                renderCertificates();
+                alert("Admin Mode Locked.");
+            } else {
+                const pass = prompt("Enter Admin Password to manage certificates:");
+                if (pass === ADMIN_PASSWORD) {
+                    isAdminLoggedIn = true;
+                    sessionStorage.setItem('navi_admin_auth', 'true');
+                    renderCertificates();
+                } else if (pass !== null) {
+                    alert("Incorrect Password!");
+                }
+            }
+        }
+
+        function checkAdminSession() {
+            if (sessionStorage.getItem('navi_admin_auth') === 'true') {
+                isAdminLoggedIn = true;
+            }
         }
 
         /* Delete Certificate Logic */
         function deleteCertificate(index) {
+            if (!isAdminLoggedIn) return;
             if (confirm("Are you sure you want to remove this certificate?")) {
                 let certs = getCertificates();
                 certs.splice(index, 1);
@@ -241,6 +318,9 @@
             const modal = document.getElementById('imageViewerModal');
             const fullImg = document.getElementById('fullScreenImage');
             fullImg.src = imageSrc;
+            fullImg.onerror = function() {
+                this.src = FALLBACK_IMAGE;
+            };
             modal.style.display = 'flex';
         }
 
@@ -251,10 +331,16 @@
         }
 
         /* Add Modal Logic */
-        function openModal() { document.getElementById('certModal').style.display = 'flex'; }
+        function openModal() {
+            if (!isAdminLoggedIn) return;
+            document.getElementById('certModal').style.display = 'flex';
+        }
+
         function closeModal() { document.getElementById('certModal').style.display = 'none'; }
 
         function saveCertificate() {
+            if (!isAdminLoggedIn) return;
+
             const title = document.getElementById('certTitle').value.trim();
             const issuer = document.getElementById('certIssuer').value.trim();
             const imageInput = document.getElementById('certImage').value.trim();
@@ -280,7 +366,7 @@
                 };
                 reader.readAsDataURL(fileInput);
             } else {
-                const finalImg = imageInput || 'cert1.jpg';
+                const finalImg = imageInput || FALLBACK_IMAGE;
                 certs.push({ title, issuer, image: finalImg, link: link || finalImg });
                 localStorage.setItem('navi_certificates', JSON.stringify(certs));
                 renderCertificates();
@@ -297,7 +383,10 @@
             document.getElementById('certFile').value = '';
         }
 
-        document.addEventListener('DOMContentLoaded', renderCertificates);
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAdminSession();
+            renderCertificates();
+        });
     </script>
 </body>
 </html>
