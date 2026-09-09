@@ -10,6 +10,92 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
     <!-- External CSS File -->
     <link rel="stylesheet" href="style.css">
+
+    <!-- Form, Modal & Full Screen Viewer Styles -->
+    <style>
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-box {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 24px;
+            width: 90%;
+            max-width: 450px;
+            color: #fff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .modal-box h3 { margin-bottom: 15px; font-family: 'Syne', sans-serif; }
+        .form-group { margin-bottom: 12px; text-align: left; }
+        .form-group label { display: block; font-size: 0.8rem; color: #8b949e; margin-bottom: 5px; }
+        .form-group input {
+            width: 100%; padding: 10px; background: #161b22;
+            border: 1px solid #30363d; border-radius: 6px; color: #fff; outline: none;
+        }
+        .form-group input:focus { border-color: #58a6ff; }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+        .btn-add-cert {
+            background: #238636; color: white; padding: 8px 16px;
+            border-radius: 6px; border: none; cursor: pointer; font-weight: 600;
+        }
+        .btn-cancel {
+            background: #21262d; color: #c9d1d9; padding: 8px 16px;
+            border-radius: 6px; border: 1px solid #30363d; cursor: pointer;
+        }
+
+        /* Full Screen Viewer Styling */
+        .viewer-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .viewer-img {
+            max-width: 90%;
+            max-height: 85vh;
+            border-radius: 8px;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.1);
+            object-fit: contain;
+        }
+        .viewer-close {
+            position: absolute;
+            top: 20px; right: 25px;
+            color: #fff; font-size: 2rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .viewer-close:hover { color: #ff4d4d; }
+        
+        /* Action buttons layout inside card */
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .btn-delete {
+            background: transparent;
+            border: none;
+            color: #ff4d4d;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 5px;
+            transition: transform 0.2s;
+        }
+        .btn-delete:hover { transform: scale(1.15); }
+    </style>
 </head>
 <body>
 
@@ -33,42 +119,17 @@
 
         <!-- Certificates Section -->
         <section class="section">
-            <div class="section-header">
+            <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <span class="section-tag">VERIFIED CREDENTIALS & CERTIFICATES</span>
+                
+                <!-- Direct Add Button -->
+                <button onclick="openModal()" class="btn-pill-light" style="cursor: pointer; background: #238636; color: white; border: none;">
+                    <i class="fa-solid fa-plus"></i> ADD CERTIFICATE
+                </button>
             </div>
 
             <!-- Certificates Grid -->
-            <div class="portfolio-grid">
-                
-                <!-- Certificate 1 Card -->
-                <div class="project-card">
-                    <div class="card-preview" style="padding: 0; overflow: hidden; background: #000;">
-                        <img src="cert1.jpg" alt="Bug Bounty Certificate" style="width: 100%; height: 100%; object-fit: cover;">
-                    </div>
-                    <div class="card-info">
-                        <div>
-                            <h3>Bug Bounty Certificate</h3>
-                            <p>ISSUED BY • PLATFORM NAME</p>
-                        </div>
-                        <a href="cert1.jpg" target="_blank" class="icon-btn" title="View Full Image"><i class="fa-solid fa-arrow-up-right"></i></a>
-                    </div>
-                </div>
-
-                <!-- Certificate 2 Card -->
-                <div class="project-card">
-                    <div class="card-preview" style="padding: 0; overflow: hidden; background: #000;">
-                        <img src="cert2.jpg" alt="Internship Certificate" style="width: 100%; height: 100%; object-fit: cover;">
-                    </div>
-                    <div class="card-info">
-                        <div>
-                            <h3>Cybersecurity Internship</h3>
-                            <p>ISSUED BY • COMPANY NAME</p>
-                        </div>
-                        <a href="cert2.jpg" target="_blank" class="icon-btn" title="View Full Image"><i class="fa-solid fa-arrow-up-right"></i></a>
-                    </div>
-                </div>
-
-            </div>
+            <div class="portfolio-grid" id="portfolio-grid"></div>
         </section>
 
         <!-- Footer -->
@@ -82,5 +143,161 @@
         </footer>
     </div>
 
+    <!-- Add Certificate Modal -->
+    <div class="modal-overlay" id="certModal">
+        <div class="modal-box">
+            <h3>Add New Certificate</h3>
+            <div class="form-group">
+                <label>Certificate Title</label>
+                <input type="text" id="certTitle" placeholder="e.g. Web Security Professional">
+            </div>
+            <div class="form-group">
+                <label>Issued By</label>
+                <input type="text" id="certIssuer" placeholder="e.g. ISSUED BY • PORTSWIGGER">
+            </div>
+            <div class="form-group">
+                <label>Upload Image OR Image Link</label>
+                <input type="file" id="certFile" accept="image/*" style="margin-bottom: 6px;">
+                <input type="text" id="certImage" placeholder="OR enter image name/URL (e.g. cert3.jpg)">
+            </div>
+            <div class="form-group">
+                <label>Verification Link / External Link (Optional)</label>
+                <input type="text" id="certLink" placeholder="e.g. https://verify.com">
+            </div>
+            <div class="modal-actions">
+                <button onclick="closeModal()" class="btn-cancel">Cancel</button>
+                <button onclick="saveCertificate()" class="btn-add-cert">Save Certificate</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full-Screen Image Viewer Modal -->
+    <div class="viewer-overlay" id="imageViewerModal" onclick="closeViewer(event)">
+        <span class="viewer-close" onclick="closeViewer(event)">&times;</span>
+        <img id="fullScreenImage" class="viewer-img" src="" alt="Full Certificate View">
+    </div>
+
+    <!-- JavaScript Auto Handler -->
+    <script>
+        const initialCertificates = [
+            {
+                title: "Bug Bounty Certificate",
+                issuer: "ISSUED BY • PLATFORM NAME",
+                image: "cert1.jpg",
+                link: "cert1.jpg"
+            },
+            {
+                title: "Cybersecurity Internship",
+                issuer: "ISSUED BY • COMPANY NAME",
+                image: "cert2.jpg",
+                link: "cert2.jpg"
+            }
+        ];
+
+        function getCertificates() {
+            const saved = localStorage.getItem('navi_certificates');
+            return saved ? JSON.parse(saved) : initialCertificates;
+        }
+
+        function renderCertificates() {
+            const certs = getCertificates();
+            const grid = document.getElementById('portfolio-grid');
+            
+            grid.innerHTML = certs.map((cert, index) => `
+                <div class="project-card">
+                    <div class="card-preview" style="padding: 0; overflow: hidden; background: #000; cursor: pointer;" onclick="openViewer('${cert.image}')">
+                        <img src="${cert.image}" alt="${cert.title}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://via.placeholder.com/400x250/0f1422/00e5ff?text=Certificate'">
+                    </div>
+                    <div class="card-info">
+                        <div>
+                            <h3>${cert.title}</h3>
+                            <p>${cert.issuer}</p>
+                        </div>
+                        <div class="card-actions">
+                            <button onclick="openViewer('${cert.image}')" class="icon-btn" title="View Full Screen">
+                                <i class="fa-solid fa-expand"></i>
+                            </button>
+                            <button onclick="deleteCertificate(${index})" class="btn-delete" title="Delete Certificate">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        /* Delete Certificate Logic */
+        function deleteCertificate(index) {
+            if (confirm("Are you sure you want to remove this certificate?")) {
+                let certs = getCertificates();
+                certs.splice(index, 1);
+                localStorage.setItem('navi_certificates', JSON.stringify(certs));
+                renderCertificates();
+            }
+        }
+
+        /* Full Screen Viewer Functions */
+        function openViewer(imageSrc) {
+            const modal = document.getElementById('imageViewerModal');
+            const fullImg = document.getElementById('fullScreenImage');
+            fullImg.src = imageSrc;
+            modal.style.display = 'flex';
+        }
+
+        function closeViewer(e) {
+            if (e.target.id === 'imageViewerModal' || e.target.classList.contains('viewer-close')) {
+                document.getElementById('imageViewerModal').style.display = 'none';
+            }
+        }
+
+        /* Add Modal Logic */
+        function openModal() { document.getElementById('certModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('certModal').style.display = 'none'; }
+
+        function saveCertificate() {
+            const title = document.getElementById('certTitle').value.trim();
+            const issuer = document.getElementById('certIssuer').value.trim();
+            const imageInput = document.getElementById('certImage').value.trim();
+            const link = document.getElementById('certLink').value.trim();
+            const fileInput = document.getElementById('certFile').files[0];
+
+            if (!title || !issuer) {
+                alert("Please fill in the title and issuer name!");
+                return;
+            }
+
+            const certs = getCertificates();
+
+            if (fileInput) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const imgData = e.target.result;
+                    certs.push({ title, issuer, image: imgData, link: link || imgData });
+                    localStorage.setItem('navi_certificates', JSON.stringify(certs));
+                    renderCertificates();
+                    closeModal();
+                    clearForm();
+                };
+                reader.readAsDataURL(fileInput);
+            } else {
+                const finalImg = imageInput || 'cert1.jpg';
+                certs.push({ title, issuer, image: finalImg, link: link || finalImg });
+                localStorage.setItem('navi_certificates', JSON.stringify(certs));
+                renderCertificates();
+                closeModal();
+                clearForm();
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('certTitle').value = '';
+            document.getElementById('certIssuer').value = '';
+            document.getElementById('certImage').value = '';
+            document.getElementById('certLink').value = '';
+            document.getElementById('certFile').value = '';
+        }
+
+        document.addEventListener('DOMContentLoaded', renderCertificates);
+    </script>
 </body>
 </html>
