@@ -531,9 +531,121 @@ body {
     color: var(--cyber-accent);
 }
 
+/* =======================================================
+   AUTO-ADJUST RESPONSIVE BREAKPOINTS (ADDED BELOW)
+   ======================================================= */
+
+/* Laptops & Medium Desktops */
+@media (max-width: 1100px) {
+    .hero-image-wrapper {
+        width: 340px;
+        right: 20px;
+    }
+    .giant-heading {
+        font-size: 4.2rem;
+    }
+}
+
+/* Tablets & Small Laptops */
 @media (max-width: 900px) {
-    .giant-heading { font-size: 3.5rem; }
-    .hero-image-wrapper { opacity: 0.2; right: 0; }
-    .stats-bar, .portfolio-grid, .dual-grid-section, .skills-container-grid { grid-template-columns: 1fr; }
-    .cta-banner { flex-direction: column; gap: 30px; text-align: center; }
+    body {
+        padding: 15px 10px;
+    }
+    .navbar {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+    .hero-section {
+        padding: 40px 25px 30px 25px;
+        min-height: auto;
+    }
+    .giant-heading { 
+        font-size: 3.5rem; 
+    }
+    .hero-bottom-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 25px;
+    }
+    .availability-badge {
+        text-align: left;
+    }
+    .hero-image-wrapper { 
+        opacity: 0.15; 
+        right: 0; 
+        width: 100%;
+    }
+    .stats-bar, 
+    .portfolio-grid, 
+    .dual-grid-section, 
+    .skills-container-grid { 
+        grid-template-columns: 1fr; 
+    }
+    .cta-banner { 
+        flex-direction: column; 
+        gap: 30px; 
+        text-align: center; 
+        padding: 35px 20px;
+    }
+    .cta-right {
+        max-width: 100%;
+        align-items: center;
+    }
+}
+
+/* Mobile Devices */
+@media (max-width: 600px) {
+    .page-wrapper {
+        gap: 25px;
+    }
+    .giant-heading {
+        font-size: 2.5rem;
+        letter-spacing: -1px;
+    }
+    .hero-actions {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        width: 100%;
+    }
+    .btn-pill-outline, 
+    .btn-pill-light {
+        width: 100%;
+        justify-content: center;
+    }
+    .tools-grid {
+        grid-template-columns: 1fr;
+    }
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .bottom-bar {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+}
+
+/* Extra Small Phones */
+@media (max-width: 400px) {
+    .giant-heading {
+        font-size: 2rem;
+    }
+    .hero-section {
+        padding: 25px 15px;
+    }
+    .stat-card h2 {
+        font-size: 1.8rem;
+    }
+    .content-box {
+        padding: 20px 15px;
+    }
 }
