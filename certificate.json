@@ -3,21 +3,21 @@
     "id": "cert-01",
     "title": "Bug Bounty Hunter",
     "issuer": "Indian Cyber Club",
-    "image": "image/bugbountycert.jpeg",
+    "image": "images/bugbountycert.jpeg",
     "verifyLink": "#"
   },
   {
     "id": "cert-02",
     "title": "Internship Certificate",
     "issuer": "Nischit",
-    "image": "image/interncert.png",
+    "image": "images/intership.png",
     "verifyLink": "#"
   },
   {
     "id": "cert-03",
     "title": "OutSkill Certification",
     "issuer": "OutSkill",
-    "image": "image/OutSkill.jpeg",
+    "image": "images/outskillcert.jpeg",
     "verifyLink": "#"
   }
 ]
