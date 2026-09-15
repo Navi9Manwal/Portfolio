@@ -1,0 +1,23 @@
+[
+  {
+    "id": "cert-01",
+    "title": "Bug Bounty Hunter",
+    "issuer": "Indian Cyber Club",
+    "image": "image/bugbountycert.jpeg",
+    "verifyLink": "#"
+  },
+  {
+    "id": "cert-02",
+    "title": "Internship Certificate",
+    "issuer": "Nischit",
+    "image": "image/interncert.png",
+    "verifyLink": "#"
+  },
+  {
+    "id": "cert-03",
+    "title": "OutSkill Certification",
+    "issuer": "OutSkill",
+    "image": "image/OutSkill.jpeg",
+    "verifyLink": "#"
+  }
+]

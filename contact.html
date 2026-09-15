@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NAVI MANWAL // CONNECT & CONTACT</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="bg-grid"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <span class="status-dot"></span> NAVI_MANWAL<span class="blink">_</span>
+    </div>
+    <nav>
+      <a href="index.html#home">Home</a>
+      <a href="index.html#skills-box">Skills</a>
+      <a href="index.html#tools-box">Tools</a>
+      <a href="index.html#projects-box">Projects</a>
+      <a href="certificates.html">Certificates ↗</a>
+      <a href="contact.html" class="highlight-link">Contact ↗</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="certificates.html" class="btn-primary">Certificates Database ↗</a>
+    </div>
+  </header>
+
+  <!-- Separate Contact Container -->
+  <main class="contact-page-wrapper">
+    <section class="standalone-box">
+      <div class="box-header">
+        <h2>/07 System_Transmission // Connect & Contact</h2>
+        <span class="box-tag">SECURE_CHANNEL</span>
+      </div>
+      
+      <div class="box-body contact-grid">
+        
+        <!-- Social Profile Cards -->
+        <div class="contact-info">
+          <h3>// EXTERNAL_NODES</h3>
+          <p>Establish a connection via official platforms or send a direct email payload.</p>
+          
+          <div class="social-cards-wrapper">
+            <!-- GitHub Card -->
+            <a href="https://github.com/Navi9Manwal" target="_blank" class="social-node-card">
+              <div class="node-icon"><i class="fa-brands fa-github"></i></div>
+              <div class="node-details">
+                <span class="node-label">GITHUB // REPOSITORY</span>
+                <span class="node-val">Navi9Manwal</span>
+              </div>
+              <span class="node-arrow">↗</span>
+            </a>
+
+            <!-- LinkedIn Card -->
+            <a href="https://www.linkedin.com/in/navi-manwal-1991a9375/" target="_blank" class="social-node-card">
+              <div class="node-icon"><i class="fa-brands fa-linkedin"></i></div>
+              <div class="node-details">
+                <span class="node-label">LINKEDIN // NETWORK</span>
+                <span class="node-val">Navi Manwal</span>
+              </div>
+              <span class="node-arrow">↗</span>
+            </a>
+
+            <!-- Email Node -->
+            <div class="social-node-card email-node">
+              <div class="node-icon"><i class="fa-solid fa-envelope"></i></div>
+              <div class="node-details">
+                <span class="node-label">DIRECT_MAIL // INBOX</span>
+                <span class="node-val">navimanwal@proton.me</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mail Form -->
+        <div class="contact-form-box">
+          <h3>// SEND_DISPATCH</h3>
+          <form id="contactForm" onsubmit="handleMailDispatch(event)">
+            <div class="form-group">
+              <label for="senderName">> SENDER_NAME:</label>
+              <input type="text" id="senderName" required placeholder="e.g. Alex Mercer">
+            </div>
+
+            <div class="form-group">
+              <label for="senderEmail">> SENDER_EMAIL:</label>
+              <input type="email" id="senderEmail" required placeholder="e.g. alex@sec-research.io">
+            </div>
+
+            <div class="form-group">
+              <label for="mailSubject">> TRANSMISSION_SUBJECT:</label>
+              <input type="text" id="mailSubject" required placeholder="Audit Request / Collaboration / General Query">
+            </div>
+
+            <div class="form-group">
+              <label for="mailMessage">> PAYLOAD_MESSAGE:</label>
+              <textarea id="mailMessage" rows="5" required placeholder="Enter your message here..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-primary form-submit-btn">
+              ⚡ DISPATCH_MAIL ↗
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-left">
+      <span class="status-dot"></span> © 2026 NAVI MANWAL. ALL RIGHTS RESERVED.
+    </div>
+    <div class="footer-links">
+      <a href="index.html">// HOME</a>
+      
+
+    </div>
+  </footer>
+
+  <script>
+    function handleMailDispatch(event) {
+      event.preventDefault();
+      const yourEmail = "navimanwal@proton.me"; // Replace with your email
+      const name = document.getElementById("senderName").value;
+      const email = document.getElementById("senderEmail").value;
+      const subject = document.getElementById("mailSubject").value;
+      const message = document.getElementById("mailMessage").value;
+
+      const bodyText = `Sender Name: ${name}\nSender Email: ${email}\n\nMessage:\n${message}`;
+      window.location.href = `mailto:${yourEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+    }
+  </script>
+</body>
+</html>
